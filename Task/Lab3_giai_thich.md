@@ -110,6 +110,13 @@ Chia **70% train / 30% test** (stratify theo label, seed 42): ngưỡng chọn t
 | Precision | TP/(TP+FP) | **1.000** | 13/13 "tương tự" dự đoán đều đúng |
 | F1 | 2PR/(P+R) | **0.929** | Hòa giữa precision & recall |
 
+💡 **Ví dụ hiểu từng ô confusion (nói theo kiểu "dịch sang chuyện đời thường"):**
+- **TP = 13** — "dự đoán tương tự và đúng": ví dụ cặp (baboon gốc, baboon nén JPEG) d = **0.004** ≤ 0.157 → đúng là cùng con khỉ.
+- **TN = 15** — "dự đoán khác và đúng": ví dụ cặp (baboon thu nhỏ, mạch điện) d = **0.541** > 0.157 → đúng là khác nội dung.
+- **FN = 2** — "thực tế tương tự nhưng bị chê": cặp (baboon gốc, baboon xoay 12°) d = **0.376** > 0.157. Đây là cặp dương **xa nhất** của bộ — xoay làm nội dung dịch chỗ → hash lệch. Muốn đỡ FN: hạ ngưỡng (mất specificity).
+- **FP = 0** — không có cặp khác nhau nào bị nhầm là tương tự → precision và specificity đều 100%.
+- **Đọc nhẩm từng chỉ số:** recall = 13/(13+2) = 0.867; specificity = 15/(15+0) = 1.0; precision = 13/(13+0) = 1.0; accuracy = (13+15)/30 = 0.933.
+
 - ⚠️ **Lưu ý trả lời:** slide ghi "Độ đặc hiệu: precision" là **nhầm lẫn** — độ đặc hiệu = **specificity** (đo TN rate); precision là phép đo khác (TP/(TP+FP)).
 
 ### Bảng sức bền theo biến đổi (trong notebook, Task 5)
