@@ -27,6 +27,13 @@ Tài liệu này giải thích **tất cả thông số, bảng, biểu đồ, �
 - **HL/LH/HH (detail):** biên ngang/dọc/chéo — nhạy biến đổi, **không dùng** để hash.
 - Kích thước LL theo mức (vì hiệu ứng biên của bộ lọc db4 dài 8): level 1 → **67×67**, level 2 → **37×37**, level 3 → **22×22** (từ ảnh 128×128).
 
+💡 **Ví dụ hiểu từng thông số:**
+- **`level` đại diện cho "co ảnh xa bao xa":** level 3 = nhìn ảnh như 22×22 → chỉ còn "bố cục to", bỏ chi tiết nhỏ. Đánh đổi thật (số từ bảng khảo sát): cùng bộ db4, **level 1 → hash 4489 bit (acc 0.967)**, **level 3 → hash 484 bit (acc 0.933)** — chênh nhẹ, gọn gần 9 lần.
+- **`wavelet='db4'` đại diện cho "kính nhìn trơn":** so với haar (bậc thang, khối vuông), db4 lọc trơn nên biên mới không tạo "vết gợn" trong LL.
+- **`size=128` đại diện cho "kích thước khuôn":** mọi ảnh kéo về cùng 1 khuôn trước khi rút gọn — nếu thiếu bước này, LL của ảnh 500px và 300px khác kích thước → **không so được Hamming**.
+- **Median trong hash:** LL có 484 hệ số; sắp xếp lấy **giá trị trung vị** (hệ số thứ ~242); mỗi hệ số > median → bit 1. Vì median chỉ so **với nhau trong ảnh** nên cả ảnh sáng lên 30% cũng không đổi thứ tự → hash không đổi (thấy thật: `home_orig` vs `home_bright30` d = **0.0083**).
+- **Hamming cụ thể:** 2 hash 484 bit khác nhau 40 bit → khoảng cách = 40/484 ≈ **0.083** → nhỏ hơn ngưỡng 0.157 → kết luận "tương tự".
+
 ## A3. Thông số bộ dữ liệu (Task 1)
 
 - **10 ảnh gốc** tải từ bộ mẫu OpenCV: baboon, board, building, butterfly, fruits, home, starry_night, sudoku, messi5, aero1 — 10 nội dung khác nhau, resize về 256×256.
@@ -44,6 +51,14 @@ Tài liệu này giải thích **tất cả thông số, bảng, biểu đồ, �
 - **Cặp âm (label = 0): 50 cặp** = (ảnh biến đổi của nguồn này, **ảnh gốc của nguồn khác**) — để 2 lớp cân bằng.
 - Tổng: **60 ảnh, 100 cặp**, sinh bằng seed 42 → chạy lại cho cùng kết quả (reproducible).
 - File mô tả cặp: `data/processed/pairs.csv`, cột: `path_a`, `path_b` (2 ảnh trong cặp), `label` (1 tương tự / 0 khác), `transform` (kiểu biến đổi), `source_a`, `source_b` (nguồn gốc từng ảnh).
+
+💡 **Ví dụ 2 dòng thật trong `pairs.csv` (đọc cho người hỏi nghe):**
+```
+path_a             path_b           label  transform  source_a    source_b
+baboon_orig.png    baboon_rot12.png   1      rot12     baboon.jpg  baboon.jpg   → cùng khỉ, khác góc nhìn
+baboon_rot12.png   board_orig.png     0      rot12     baboon.jpg  board.jpg    → khỉ xoay vs mạch điện: khác nội dung
+```
+- Dòng 1 khoảng cách **0.376** (cặp dương xa nhất của bộ — xoay làm nội dung dịch chỗ); dòng 2 khoảng cách **0.508** → tách lớp đúng.
 
 ## A4. Các hàm trong `src/wavelet_hash.py`
 
