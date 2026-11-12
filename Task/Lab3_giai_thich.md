@@ -116,6 +116,8 @@ Chia **70% train / 30% test** (stratify theo label, seed 42): ngưỡng chọn t
 - **FN = 2** — "thực tế tương tự nhưng bị chê": cặp (baboon gốc, baboon xoay 12°) d = **0.376** > 0.157. Đây là cặp dương **xa nhất** của bộ — xoay làm nội dung dịch chỗ → hash lệch. Muốn đỡ FN: hạ ngưỡng (mất specificity).
 - **FP = 0** — không có cặp khác nhau nào bị nhầm là tương tự → precision và specificity đều 100%.
 - **Đọc nhẩm từng chỉ số:** recall = 13/(13+2) = 0.867; specificity = 15/(15+0) = 1.0; precision = 13/(13+0) = 1.0; accuracy = (13+15)/30 = 0.933.
+- 💡 **AUC 0.996 đại diện cho điều gì:** "lấy ngẫu nhiên 1 cặp tương tự và 1 cặp khác nhau, xác suất 99.6% là cặp tương tự có khoảng cách **nhỏ hơn**" — AUC không phụ thuộc ngưỡng, đo chất lượng của *hash*; accuracy phụ thuộc ngưỡng, đo chất lượng của *quyết định*.
+- 💡 **Ngưỡng 0.157 (Youden) đại diện cho điều gì:** quét mọi giá trị ngưỡng trên ROC train, lấy điểm **xa đường chéo ngẫu nhiên nhất** (max TPR − FPR). Tại sao không chọn ngưỡng giữa 2 dải cho bằng? Vì Youden ưu tiên cả 2 phía: điểm 0.157 vừa loại sạch nhóm khác (FPR=0) vừa giữ được 13/15 nhóm giống.
 
 - ⚠️ **Lưu ý trả lời:** slide ghi "Độ đặc hiệu: precision" là **nhầm lẫn** — độ đặc hiệu = **specificity** (đo TN rate); precision là phép đo khác (TP/(TP+FP)).
 
